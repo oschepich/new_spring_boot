@@ -9,6 +9,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,6 +29,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.roleDao = roleDao;
     }
 
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     //  метод передачи всего списка user-ов
     @Override
     @Transactional
@@ -38,6 +42,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public void saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.saveUser(user);
     }
 
@@ -51,7 +56,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public void creatUser(User user) {
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.saveUser(user); }
 
 

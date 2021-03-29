@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+>
 
 <head>
     <title> Admin panel </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-
-
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
 </head>
 <header>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-                <span class="navbar-brand">
-                    <h2>Admin</h2>
+
+        <span class="navbar-brand">
+            <b><span th:text="${tecUser.getEmail()}"></span></b>
+                <span> with roles: </span>
+                <span th:each="userRole: ${tecUser.role}">
+                     <span th:text="${userRole.getRole()}"></span>
                 </span>
+        </span>
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
             </ul>
@@ -34,12 +46,10 @@
             <div class="col-2">
                 <br>
                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <a class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" href="#v-pills-home"
-                       role="tab"
-                       aria-controls="v-pills-home" aria-selected="true">Admin</a>
-                    <a class="nav-link " id="v-pills-profile-tab" data-bs-toggle="pill" href="/user"
-                       role="tab"
-                       aria-controls="v-pills-profile" aria-selected="false">User</a>
+                    <a class="nav-link active" id="v-pills-home-tab" data-toggle="tab" href="#v-pills-home"
+                       role="tab" aria-controls="v-pills-home" aria-selected="true">Admin</a>
+                    <a class="nav-link " id="v-pills-profile-tab" data-toggle="tab" href="#v-pills-profile"
+                       role="tab" aria-controls="v-pills-profile" aria-selected="false">User</a>
                 </div>
             </div>
             <div class="col-10"
@@ -64,9 +74,11 @@
                         </ul>
                         <br>
                         <div class="tab-content">
+
                             <div class="tab-pane active" id="nav-home" role="tabpanel"
                                  aria-labelledby="nav-home-tab">
                                 <h5>All users</h5>
+
                                 <table class="table table-hover text-center" style="background-color: white">
                                     <tr>
                                         <th scope="col">ID</th>
@@ -87,22 +99,23 @@
                                         </td>
                                         <td>
                                             <div class="col-small">
-                                                 <button class="btn btn-primary" type="button" data-toggle="modal"
+                                                <button class="btn btn-primary" type="button" data-toggle="modal"
                                                         th:data-target="${'#editModal'+ user.id}">
                                                     Edit
-                                                 </button>
+                                                </button>
                                             </div>
-<!--                                            Модальное окно Edit-->
+                                            <!--  Модальное окно Edit-->
                                             <div class="modal" id="editModal" tabindex="-1" role="dialog"
                                                  aria-labelledby="editModalLabel"
                                                  aria-hidden="true" th:attrappend="id=${user.id}">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
-                                                        <form th:method="PATCH"
+                                                        <form th:method="POST"
                                                               th:action="@{/admin/edit/{id}(id=${user.getId()})}"
                                                               th:object="${user}">
                                                             <div class="modal-header">
-                                                                <h4 class="modal-title text-left" id="editModalLabel">Edit
+                                                                <h4 class="modal-title text-left" id="editModalLabel">
+                                                                    Edit
                                                                     user</h4>
                                                                 <button class="close" data-dismiss="modal"
                                                                         aria-label="х"></button>
@@ -110,7 +123,8 @@
                                                             <div class="modal-body">
                                                                 <div class="container-fluid">
                                                                     <div class="form-group text-center">
-                                                                        <input type="hidden" class="text" readonly size="50"
+                                                                        <input type="hidden" class="text" readonly
+                                                                               size="50"
                                                                                name="id" th:value="${user.id}">
                                                                         <label class="font-weight-bold "
                                                                                for="formGroupInputModal">Name</label>
@@ -119,22 +133,25 @@
                                                                                id="formGroupInputModal" name="username">
                                                                         <label class="font-weight-bold"
                                                                                for="formemailGroupExampleInputModal">Email</label>
-                                                                        <input type="email" class="form-control" name="email"
+                                                                        <input type="email" class="form-control"
+                                                                               name="email"
                                                                                th:value="${user.email}"
                                                                                id="formemailGroupExampleInputModal">
                                                                         <label class="font-weight-bold"
                                                                                for="formGroupExampleInputModalPassword">Password</label>
                                                                         <input type="password"
                                                                                id="formGroupExampleInputModalPassword"
-                                                                               name="password" th:value="${user.password}"
+                                                                               name="password"
                                                                                class="form-control">
                                                                         <div class="form-group text-center">
                                                                             <label class="font-weight-bold"
                                                                                    for="exampleRoleSelect2">Role</label>
-                                                                            <select multiple size="2" name="roleSet"
+                                                                            <select required multiple size="2"
+                                                                                    name="roleSet"
                                                                                     class="form-control"
                                                                                     id="exampleRoleSelect2">
-                                                                                <option value="ROLE_ADMIN">ADMIN</option>
+                                                                                <option value="ROLE_ADMIN">ADMIN
+                                                                                </option>
                                                                                 <option value="ROLE_USER">USER</option>
                                                                             </select>
                                                                         </div>
@@ -143,9 +160,11 @@
                                                                 </div>
                                                             </div>
                                                             <div class="modal-footer">
-                                                                <button class="btn btn-secondary" data-dismiss="modal">Close
+                                                                <button class="btn btn-secondary" data-dismiss="modal">
+                                                                    Close
                                                                 </button>
-                                                                <button type="submit" class="btn btn-primary">Edit</button>
+                                                                <button type="submit" class="btn btn-primary">Edit
+                                                                </button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -166,35 +185,45 @@
                             <div class="tab-pane" id="nav-newuser" role="tabpanel"
                                  aria-labelledby="nav-newuser-tab">
                                 <h5>Add new User </h5>
-                                <div class="tab-content text-center"
-                                     style="background-color:white; padding-left: 425px; padding-right: 425px;">
 
+                                <div class="tab-content-smoll text-center"
+                                     style="background-color:white">
 
                                     <form th:method="POST" th:action="@{/admin/add}" th:object="${user}">
                                         <br>
-                                        <div class="form-group text-center">
+                                        <div class="row justify-content-md-center">
+                                            <div class="col col-lg-4"></div>
+                                            <div class="col-md-4">
+                                                <div class="form-group text-center">
 
-                                            <label for="name" class="font-weight-bold">Name</label>
-                                            <input id="name" th:type="text" th:name="username"
-                                                   class="form-control bg-warning text-dark">
-                                            <label for="email" class="font-weight-bold">Email</label>
-                                            <input id="email" th:type="email" th:name="email"
-                                                   class="form-control bg-warning text-dark">
-                                            <label for="password" class="font-weight-bold">Password</label>
-                                            <input id="password" type="password" th:name="password"
-                                                   class="form-control bg-warning text-dark">
-                                            <label for="role" class="font-weight-bold">Role</label>
-                                            <br>
-                                            <select class="custom-select" size="2" aria-label="size 2 select example"
-                                                    aria-controls="v-pills-profile" data-bs-toggle="pill" id="role"
-                                                    name="roleSet">
-                                                <option value="ROLE_ADMIN">ADMIN</option>
-                                                <option value="ROLE_USER">USER</option>
-                                            </select>
+                                                    <label for="name" class="font-weight-bold">Name</label>
+                                                    <input id="name" th:type="text" th:name="username"
+                                                           class="form-control bg-warning text-dark">
+                                                    <label for="email" class="font-weight-bold">Email</label>
+                                                    <input id="email" th:type="email" th:name="email"
+                                                           class="form-control bg-warning text-dark">
+                                                    <label for="password" class="font-weight-bold">Password</label>
+                                                    <input id="password" type="password" th:name="password"
+                                                           class="form-control bg-warning text-dark">
+                                                    <label for="role" class="font-weight-bold">Role</label>
+                                                    <br>
+                                                    <select required multiple class="custom-select" size="2"
+                                                            aria-label="size 2 select example"
+                                                            aria-controls="v-pills-profile" data-bs-toggle="pill"
+                                                            id="role"
+                                                            name="roleSet">
+                                                        <option value="ROLE_ADMIN">ADMIN</option>
+                                                        <option value="ROLE_USER">USER</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col col-lg-4"></div>
                                         </div>
+
                                         <input type="submit" class="btn btn-success" value="Add new user"/>
                                         <br><br>
                                     </form>
+
                                 </div>
                             </div>
                         </div>
@@ -208,19 +237,22 @@
                         <div class="tab-content">
 
                             <h5>About user</h5>
-                            <table class="table table-hover" style="background-color: white">
+                            <table class="table table-hover text-center" style="background-color: white ">
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Role</th>
                                 </tr>
-                                <tr th:each="msg : ${allUser}">
-                                    <td th:text="${msg.getId()}">user</td>
-                                    <td th:text="${msg.getUsername()}">user</td>
-                                    <td th:text="${msg.getEmail()}">user</td>
-                                    <td th:text="${msg.getRole()}"></td>
-
+                                <tr>
+                                    <td th:text="${tecUser.id}"></td>
+                                    <td th:text="${tecUser.username}"></td>
+                                    <td th:text="${tecUser.email}"></td>
+                                    <td>
+                                        <p th:each="userRole: ${tecUser.role}">
+                                            <span th:text="${userRole.getRole()}"></span>
+                                        </p>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
@@ -229,20 +261,10 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+
 </body>
 
 <!--Модальное окно Delete-->

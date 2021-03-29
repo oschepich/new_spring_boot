@@ -2,8 +2,6 @@ package com.oschepich.spring_boot.new_spring_boot.repository;
 
 
 import com.oschepich.spring_boot.new_spring_boot.model.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -18,7 +16,7 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
 
 // метод передачи всего списка пользователей
     @Override
@@ -30,7 +28,7 @@ public class UserDaoImpl implements UserDao {
 // метод обновления и добавления пользователя
     @Override
     public void saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         entityManager.merge(user);
     }
 

@@ -1,6 +1,7 @@
 package com.oschepich.spring_boot.new_spring_boot.model;
 
 
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.util.Set;
 // Имя роли должно соответствовать шаблону: «ROLE_ИМЯ», например, ROLE_USER.
 @Entity
 @Table(name = "role")
+@Data
 public class Role implements GrantedAuthority {
     @Id
     @Column(name = "id")

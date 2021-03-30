@@ -14,18 +14,11 @@ public interface UserService<T>{
 
     void saveUser(User user);
 
-//    void updateUser(Long id, String name, String email);
-
-    void creatUser(User user);
-
     T show(Long id);
 
      void deleteUser(Long id);
 
-//    T getRoleById(Long id);
-
-
-    Role getRoleByName(String name);
+    Role getRole(String name);
 
     public List<Role> getListRole();
 

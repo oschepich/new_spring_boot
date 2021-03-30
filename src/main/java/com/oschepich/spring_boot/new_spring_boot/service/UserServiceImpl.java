@@ -2,8 +2,8 @@ package com.oschepich.spring_boot.new_spring_boot.service;
 
 import com.oschepich.spring_boot.new_spring_boot.model.Role;
 import com.oschepich.spring_boot.new_spring_boot.model.User;
-import com.oschepich.spring_boot.new_spring_boot.repository.RoleDao;
-import com.oschepich.spring_boot.new_spring_boot.repository.UserDao;
+import com.oschepich.spring_boot.new_spring_boot.repository.RoleRepository;
+import com.oschepich.spring_boot.new_spring_boot.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,83 +13,63 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    private final UserDao userDao;
-    private final RoleDao roleDao;
 
-    public UserServiceImpl(UserDao userDao, RoleDao roleDao) {
-        this.userDao = userDao;
-        this.roleDao = roleDao;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     //  метод передачи всего списка user-ов
     @Override
-    @Transactional
     public List<User> getAllUser() {
-        return userDao.getAllUser();
+        return userRepository.findAll();
     }
 
-    //  метод добавления одного user-а в списка
+    //  метод добавления или изменение одного user-а в список(ке)
     @Override
-    @Transactional
     public void saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDao.saveUser(user);
+        userRepository.save(user);
     }
-
-    //    метод обновления пользователя (возможно пригодится на потом - пока не используется)
-//    @Override
-//    @Transactional
-//    public void updateUser(Long id, String name, String email) {
-//        userDao.updateUser(id, name, email);
-//    }
-
-    @Override
-    @Transactional
-    public void creatUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDao.saveUser(user); }
-
 
     //  метод нахождения одного user-а в списке
     @Override
-    @Transactional
     public User show(Long id) {
-        return (User) userDao.show(id);
+        User user=null;
+        Optional <User> optional=userRepository.findById(id);
+        if (optional.isPresent()){
+            user=optional.get();
+        }
+        return user;
     }
 
     //  метод удаления одного user-а из списка
     @Override
-    @Transactional
     public void deleteUser(Long id) {
-        userDao.deleteUser(id);
-    }
-
-
-//    @Override
-//    public Role getRoleById(Long id) {
-//        return (Role) this.roleDao.getRoleById(id);
-//    }
-
-    @Override
-    @Transactional
-    public Role getRoleByName(String name) {
-        return roleDao.getRoleByName(name);
+        userRepository.deleteById(id);
     }
 
     @Override
-    @Transactional
+    public Role getRole(String role) {
+        return roleRepository.findRoleByRole(role);
+    }
+
+    @Override
     public List<Role> getListRole() {
-        return roleDao.getListRole();
+        return roleRepository.findAll();
     }
 
     // «Пользователь» – это просто Object. В большинстве случаев он может быть
@@ -97,9 +77,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     // Для создания UserDetails используется интерфейс UserDetailsService, с единственным методом:
 
     @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = (User) userDao.getUserByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = (User) userRepository.findUserByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("USER not found");
         }
@@ -107,8 +86,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         for (Role role : user.getRole()) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getAuthority()));
         }
-        return new org.springframework.security.core.userdetails.User(username, user.getPassword(), grantedAuthorities);
+        return new org.springframework.security.core.userdetails.User(email, user.getPassword(), grantedAuthorities);
     }
-
 
 }

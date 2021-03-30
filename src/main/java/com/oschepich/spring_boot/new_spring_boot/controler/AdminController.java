@@ -3,9 +3,8 @@ package com.oschepich.spring_boot.new_spring_boot.controler;
 
 import com.oschepich.spring_boot.new_spring_boot.model.Role;
 import com.oschepich.spring_boot.new_spring_boot.model.User;
-import com.oschepich.spring_boot.new_spring_boot.repository.UserDaoImpl;
+import com.oschepich.spring_boot.new_spring_boot.repository.UserRepository;
 import com.oschepich.spring_boot.new_spring_boot.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,20 +19,18 @@ import java.util.Set;
 public class AdminController {
 
 
-    @Autowired
     private final UserService userService;
-    @Autowired
-    private final UserDaoImpl userDao;
+    private final UserRepository userRepository;
 
-    public AdminController(UserService userService, UserDaoImpl userDao) {
+    public AdminController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
-        this.userDao = userDao;
+        this.userRepository = userRepository;
     }
 
     //вывожу всех пользователей
     @GetMapping
     public ModelAndView getAllUsers(ModelAndView modelAndView, Principal principal) {
-        modelAndView.addObject( "tecUser", this.userDao.getUserByUsername(principal.getName()));
+        modelAndView.addObject( "tecUser", this.userRepository.findUserByEmail(principal.getName()));
         modelAndView.addObject("allUser", userService.getAllUser());
         modelAndView.addObject("user", new User());
         modelAndView.setViewName("admin");
@@ -49,7 +46,6 @@ public class AdminController {
     @PostMapping("/add")
     public String addUser(@ModelAttribute("user") User user,
                           @RequestParam(value = "roleSet", required = false) String[] roleSet) {
-//        @RequestParam(name = "roleSet", required = false) String[] roleSet) {
         user.setRole(getAddRole(roleSet));
         userService.saveUser(user);
         return "redirect:/admin";
@@ -67,28 +63,26 @@ public class AdminController {
     @PostMapping("/edit/{id}")
     public String editUser(@ModelAttribute("user") User user,
                            @RequestParam(value = "roleSet", required = false) String[] roleSet) {
-//        @RequestParam(name = "roleSet", required = false) String[] roleSet) {
-
             user.setRole(getAddRole(roleSet));
             userService.saveUser(user);
         return "redirect:/admin";
     }
     //удаляю пользователя
     @PostMapping("/delete/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    public String deleteUser(@PathVariable Long id, Principal principal) {
         userService.deleteUser(id);
         return "redirect:/admin";
     }
 
     private Set<Role> getAddRole(String[] roles) {
-        if (roles == null){
-            Set<Role> roleSet = new HashSet<>();
-            roleSet.add(userService.getRoleByName("ROLE_USER"));
-            return roleSet;
-        }
+//        if (roles == null){
+//            Set<Role> roleSet = new HashSet<>();
+//            roleSet.add(userService.getRoleByName("ROLE_USER"));
+//            return roleSet;
+//        }
         Set<Role> roleSet = new HashSet<>();
         for (String role : roles) {
-            roleSet.add(userService.getRoleByName(role));
+            roleSet.add(userService.getRole(role));
         }
         return roleSet;
     }

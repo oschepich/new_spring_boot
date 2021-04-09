@@ -18,10 +18,8 @@ public interface UserService<T>{
 
      void deleteUser(Long id);
 
-    Role getRole(String name);
+     User findUserByEmail(String email);
 
-    public List<Role> getListRole();
-
-    UserDetails loadUserByUsername(String s) throws UsernameNotFoundException;
+     UserDetails loadUserByUsername(String s) throws UsernameNotFoundException;
 
 }

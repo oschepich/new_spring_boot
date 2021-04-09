@@ -21,9 +21,9 @@
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 
         <span class="navbar-brand">
-            <b><span th:text="${tecUser.getEmail()}"></span></b>
+            <b><span th:text="${tecUser.getUsername()}"></span></b>
                 <span> with roles: </span>
-                <span th:each="userRole: ${tecUser.role}">
+                <span th:each="userRole: ${tecUser.getRole()}">
                      <span th:text="${userRole.getRole()}"></span>
                 </span>
         </span>

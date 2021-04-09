@@ -4,6 +4,7 @@ import com.oschepich.spring_boot.new_spring_boot.model.Role;
 import com.oschepich.spring_boot.new_spring_boot.model.User;
 import com.oschepich.spring_boot.new_spring_boot.repository.RoleRepository;
 import com.oschepich.spring_boot.new_spring_boot.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,13 +22,12 @@ import java.util.Set;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+
     }
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -62,16 +62,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.deleteById(id);
     }
 
-    @Override
-    public Role getRole(String role) {
-        return roleRepository.findRoleByRole(role);
-    }
-
-    @Override
-    public List<Role> getListRole() {
-        return roleRepository.findAll();
-    }
-
     // «Пользователь» – это просто Object. В большинстве случаев он может быть
     //  приведен к классу UserDetails.
     // Для создания UserDetails используется интерфейс UserDetailsService, с единственным методом:
@@ -87,6 +77,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getAuthority()));
         }
         return new org.springframework.security.core.userdetails.User(email, user.getPassword(), grantedAuthorities);
+    }
+    @Override
+    public User findUserByEmail(String email){
+        return userRepository.findUserByEmail(email);
     }
 
 }
